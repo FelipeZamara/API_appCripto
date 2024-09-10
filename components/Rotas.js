@@ -8,5 +8,11 @@ import { Alterar } from "./AlterarCriptos";
 const stack = createStackNavigator();
 
 export default function Rotas(){
-    return();
+    return(
+        <Stack.Navigator> 
+            <Stack.Screen name="Home" component={Home}/>
+            <Stack.Screen name="Cadastrar" component={Cadastrar}/> 
+            <Stack.Screen name="Alterar" component={Alterar}/>   
+        </Stack.Navigator>
+    );
 }
