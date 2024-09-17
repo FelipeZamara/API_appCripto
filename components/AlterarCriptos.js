@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
 import { firestore } from "../Firebase";
-import { collection, doc, updateDoc } from "../Firebase/firestore";
+import { collection, doc, updateDoc } from "../Firebase";
 
 export default function AlteraCripto({ navigation, route}) {
     const id = route.params.id;

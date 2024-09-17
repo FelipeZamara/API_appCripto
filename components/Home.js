@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
 import { firestore } from "../Firebase";
-import { collection, onSnapshot, deleteDoc, doc } from "../Firebase/firestore";
-import { QuerySnapshot } from "firebase/firestore";
+import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 
 export default function Home({ navigation }) {
 
@@ -10,62 +9,72 @@ export default function Home({ navigation }) {
 
     async function deleteCripto(id) {
         try {
-            await deleteDoc(doc(firestore, "tbmoeda", id));
+            await deleteDoc(doc(firestore, 'tbmoeda', id));
             Alert.alert("A criptomoeda foi deletada.")
-        } catch (erro) {
+        } catch (error) {
             console.log("Erro ao deletar.", error)
         }
     }
 
     useEffect(() => {
-        const unsubcribe = onSnapshot(collection(firestore, 'tbmoeda'), (QuerySnapshot) => {
+        const unsubscribe = onSnapshot(collection(firestore, 'tbmoeda'), (querySnapshot) => {
             const lista = [];
-            QuerySnapshot.forEach((doc) => {
+            querySnapshot.forEach((doc) => {
                 lista.push({ ...doc.data(), id: doc.id });
             });
             setcriptos(lista);
         });
-        return () => unsubcribe();
+        return () => unsubscribe();
     }, []);
 
     return (
-        <View>
+        <View style={estilo.container}>
             <View>
-                <Text>Lista de criptomoedas</Text>
+                <Text style={estilo.titulo}>Lista de criptomoedas</Text>
             </View>
             <FlatList
                 data={criptos}
                 renderItem={({ item }) => {
                     return (
-                        <View>
-                            <TouchableOpacity onPress={() => navigation.navigate("AlteraCriptos", {
-                                id: item.id,
-                                nomeCripto: item.nomeCripto,
-                                siglaCripto: item.siglaCripto,
-                                valorCripto: item.valorCripto
-
-                            })}>
+                        <View style={estilo.criptos}>
+                            <TouchableOpacity 
+                                onPress={() => navigation.navigate("Alterar", {
+                                    id: item.id,
+                                    nomeCripto: item.nomeCripto,
+                                    siglaCripto: item.siglaCripto,
+                                    valorCripto: item.valorCripto
+                                })}
+                            >
                                 <View>
-                                    <Text> Criptomoeda: <Text>{item.nomeCripto}</Text></Text>
-                                    <Text> Sigla: <Text>{item.siglaCripto}</Text></Text>
-                                    <Text> Valor: <Text>{item.valorCripto}</Text></Text>
+                                    <Text style={estilo.titulocriptos}>
+                                        Criptomoeda: <Text style={estilo.textocriptos}>{item.nomeCripto}</Text>
+                                    </Text>
+                                    <Text style={estilo.titulocriptos}>
+                                        Sigla: <Text style={estilo.textocriptos}>{item.siglaCripto}</Text>
+                                    </Text>
+                                    <Text style={estilo.titulocriptos}>
+                                        Valor: <Text style={estilo.textocriptos}>{item.valorCripto}</Text>
+                                    </Text>
                                 </View>
                             </TouchableOpacity>
-                            <View>
-                                <TouchableOpacity onPress={() => { deleteCripto(item.id) }} >
-                                    X
+                            <View style={estilo.botaodeletar}>
+                                <TouchableOpacity onPress={() => deleteCripto(item.id)} >
+                                    <Text style={estilo.textocriptos}>X</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
                     );
                 }}
+                keyExtractor={item => item.id}
             />
-            <TouchableOpacity onPress={() => navigation.navigate("CadastrarCriptos")}>
-                +
+            <TouchableOpacity 
+                style={estilo.addbutton} 
+                onPress={() => navigation.navigate("Cadastrar")}
+            >
+                <Text style={estilo.textocriptos}>+</Text>
             </TouchableOpacity>
         </View>
     );
-
 }
 
 const estilo = StyleSheet.create({
@@ -101,16 +110,19 @@ const estilo = StyleSheet.create({
         borderRadius: 10,
     },
     botaodeletar: {
-        textAlignVertical: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
         marginVertical: 10,
     },
     addbutton: {
         backgroundColor: '#ffffff',
         borderRadius: 50,
         position: 'absolute',
-        left: 20,
+        right: 20,
         bottom: 40,
         justifyContent: "center",
         alignItems: "center",
+        width: 50,
+        height: 50,
     },
 });
